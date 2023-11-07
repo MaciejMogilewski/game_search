@@ -1,3 +1,5 @@
+// @ts-nocheck
+
 import {useEffect, useState} from "react";
 import axios from "axios";
 import {API_HOST, API_KEY} from "../constants";
@@ -5,15 +7,15 @@ import {filterType} from "../components/FilterTypes";
 
 const localCache = {};
 
-export const useFetchGames = ({platform, sortBy, genre}: filterType) => {
+export const useFetchGames = ({platform, sortBy, genre, tag}: filterType) => {
     const [games, setGames] = useState([]);
     const [error, setError] = useState('');
 
     useEffect(() => {
         const controller = new AbortController()
 
-        if (localCache[`${platform}${sortBy}${genre}`]) {
-            setGames(localCache[`${platform}${sortBy}${genre}`])
+        if (localCache[`${platform}${sortBy}${genre}${tag}`]) {
+            setGames(localCache[`${platform}${sortBy}${genre}${tag}`])
         } else {
             getGames(controller.signal)
         }
@@ -22,7 +24,7 @@ export const useFetchGames = ({platform, sortBy, genre}: filterType) => {
             controller.abort();
         }
 
-    },[platform, sortBy, genre])
+    },[platform, sortBy, genre, tag])
 
     const getGames = async (signal) => {
         const response = await  axios.get('/games', {
@@ -35,13 +37,14 @@ export const useFetchGames = ({platform, sortBy, genre}: filterType) => {
             params: {
                 platform,
                 'sort-by': sortBy,
-                category: genre
+                category: genre,
+                tag
             }
         })
 
         if (response.data.status !== 0) {
-            localCache[`${platform}${sortBy}${genre}`] = response.data;
-            setGames(localCache[`${platform}${sortBy}${genre}`])
+            localCache[`${platform}${sortBy}${genre}${tag}`] = response.data;
+            setGames(localCache[`${platform}${sortBy}${genre}${tag}`])
         } else {
             setGames([])
         }

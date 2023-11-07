@@ -1,20 +1,12 @@
+// @ts-nocheck
+
 import GameFilter from "./GameFilter";
 import React from "react";
 import {filterType} from "./FilterTypes";
-
-export interface game {
-    id: number;
-    title: string;
-    thumbnail: string;
-    short_description: string;
-    game_url: string;
-    genre: string;
-    platform: string;
-    publisher: string;
-    developer: string;
-    release_date: string;
-    freetogame_profile_url: string;
-}
+import {Alert, Box, Stack} from "@mui/material";
+import GameCard from "./GameCard";
+import {game} from "./GameTypes";
+import Grid from "@mui/material/Unstable_Grid2"
 
 type gameListProps = {
     games: game[];
@@ -23,14 +15,23 @@ type gameListProps = {
 
 function GameList({games, onFilterChange}: gameListProps): JSX.Element {
     return (
-        <div>
+        <Box>
             <GameFilter onFilterChange={onFilterChange}/>
-            {games.map((game) => (
-                <div key={game.id}>
-                    {game.title}, {game.platform}, {game.genre}
-                </div>
-            ))}
-        </div>
+            <Grid container spacing={2} marginTop={3}>
+                {!games.length ? (
+                    <Stack sx={{width: '100%'}} spacing={2}>
+                        <Alert variant="filled" severity="success">
+                            No games found
+                        </Alert>
+                    </Stack>
+                ) : (
+                    games.map((game) => (
+                        <GameCard game={game} key={game.id}/>
+                    ))
+                )}
+
+            </Grid>
+        </Box>
     );
 }
 
